@@ -41,7 +41,6 @@ class CaService : public ItsG5BaseService
 
 		ChannelNumber mPrimaryChannel = channel::CCH;
 		const NetworkInterfaceTable* mNetworkInterfaceTable = nullptr;
-		const VehicleDataProvider* mVehicleDataProvider = nullptr;
 		const Timer* mTimer = nullptr;
 		LocalDynamicMap* mLocalDynamicMap = nullptr;
 
@@ -60,6 +59,11 @@ class CaService : public ItsG5BaseService
 		vanetza::units::Velocity mSpeedDelta;
 		bool mDccRestriction;
 		bool mFixedRate;
+
+	protected:
+		int mId;
+		
+		const VehicleDataProvider* mVehicleDataProvider = nullptr;
 };
 
 vanetza::asn1::Cam createCooperativeAwarenessMessage(const VehicleDataProvider&, uint16_t genDeltaTime);

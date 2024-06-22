@@ -20,6 +20,51 @@
 #include <vanetza/facilities/cam_functions.hpp>
 #include <chrono>
 
+ #include <fstream>
+
+namespace mobcom
+{
+
+class CamLogger {
+public:
+    CamLogger(const std::string& log_filename) {
+        std::cout << "Writing CAMs to: " << log_filename << std::endl;
+
+        m_file.open(log_filename, std::ios::trunc);
+        m_file << "Timestamp,ServiceID,Pseudonym,Longitude,Latitude,Width,Length,Speed,Heading" << std::endl;
+    }
+
+    void log(const vanetza::asn1::Cam& message, const omnetpp::SimTime& time, int serviceId) {
+        const ItsPduHeader_t& header = message->header;
+        const CoopAwareness_t& cam = message->cam;
+        const BasicContainer_t& basic = cam.camParameters.basicContainer;
+
+        if (!cam.camParameters.highFrequencyContainer.present == HighFrequencyContainer_PR_basicVehicleContainerHighFrequency)
+            return;
+
+        const BasicVehicleContainerHighFrequency& bvc = cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency;
+
+        m_file << time.inUnit(SimTimeUnit::SIMTIME_MS) << ",";
+        m_file << serviceId << ",";
+        m_file << header.stationID << ",";
+        m_file << basic.referencePosition.longitude << ",";
+        m_file << basic.referencePosition.latitude << ",";
+        m_file << bvc.vehicleWidth << ",";
+        m_file << bvc.vehicleLength.vehicleLengthValue << ",";
+        m_file << bvc.speed.speedValue << ",";
+        m_file << bvc.heading.headingValue << "\n";
+    }
+
+    ~CamLogger() {
+        m_file.close();
+    }
+
+private:
+    std::ofstream m_file;
+};
+
+}
+
 namespace artery
 {
 
@@ -96,6 +141,8 @@ void CaService::initialize()
 
 	// look up primary channel for CA
 	mPrimaryChannel = getFacilities().get_const<MultiChannelPolicy>().primaryChannel(vanetza::aid::CA);
+	
+	mId = getId();
 }
 
 void CaService::trigger()
@@ -162,6 +209,11 @@ void CaService::sendCam(const SimTime& T_now)
 	uint16_t genDeltaTimeMod = countTaiMilliseconds(mTimer->getTimeFor(mVehicleDataProvider->updated()));
 	auto cam = createCooperativeAwarenessMessage(*mVehicleDataProvider, genDeltaTimeMod);
 
+	// cam->serviceId = mId;
+
+ 	// auto vehicleId = mVehicleController->getVehicleId();
+	// OCTET_STRING_fromString(&cam->ncam.vehicleId, vehicleId.c_str());
+
 	mLastCamPosition = mVehicleDataProvider->position();
 	mLastCamSpeed = mVehicleDataProvider->speed();
 	mLastCamHeading = mVehicleDataProvider->heading();
@@ -179,6 +231,13 @@ void CaService::sendCam(const SimTime& T_now)
 	request.gn.maximum_lifetime = geonet::Lifetime { geonet::Lifetime::Base::One_Second, 1 };
 	request.gn.traffic_class.tc_id(static_cast<unsigned>(dcc::Profile::DP2));
 	request.gn.communication_profile = geonet::CommunicationProfile::ITS_G5;
+
+    /* Changes to log cam messages */
+
+
+    static mobcom::CamLogger camLogger("results/cam.txt");
+    camLogger.log(cam, mVehicleDataProvider->updated(), mId);
+    /* End of changes */
 
 	CaObject obj(std::move(cam));
 	emit(scSignalCamSent, &obj);
