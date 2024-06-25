@@ -1,26 +1,43 @@
 import pandas as pd
 import math
 
-# canfile = 'can_messages.csv'
+# -------------------- ATTACKER --------------------
+# This code input cam messages  track a vehicle by 
+# location and speed of the vehicle. At the end, the 
+# result is compared to the actual record of the 
+# vehicle and compure the accuracy of the attacker to 
+# evaluate how good the pseudonym change strategies are
+
+# Comment unwanted cam message file and uncomment wanted cam message file here
 # can_file = 'camRandTime.csv'
-# can_file = 'camRandDistance.csv'
+can_file = 'camRandDistance.csv'
 # can_file = 'camDistance.csv'
-# can_file = 'camNoChange.csv'
-can_file = 'camPeriodical.csv'
+# can_file = 'camPeriodical.csv'
 
 data = pd.read_csv(can_file)
 # data = data.drop(data.index[724:])
 pseudonym_data = data.drop(columns={'ServiceID','Width','Length','Heading'})
 
-#Change Variable Value here
-starting_idx = 0
+# Change Variable Value here
+starting_idx = 0 # Change the starting index (refer below) and run
 threshold = 60
-serviceID = data.ServiceID[starting_idx]
+
+# ServiceID : Starting Index
+# 85    : 0
+# 155   : 2
+# 225   : 12
+# 295   : 13
+# 365   : 53
+# 415   : 100
+# 505   : 117
+# 575   : 134
 
 # Initialize variables
+serviceID = data.ServiceID[starting_idx]
 vehicle_idx = [starting_idx]
 last_idx = starting_idx
 all_dist =[]
+check = []
 
 # Function to calculate the distance between two points
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -64,7 +81,7 @@ for i in range(last_idx + 1, len(pseudonym_data)):
         continue
     else:    
         # Calculate the distance from the previous point to the current point
-        # using euclidean distance
+        # using coordinates
         dist = calculate_distance(
             pseudonym_data.Latitude[last_idx],
             pseudonym_data.Longitude[last_idx],
@@ -81,16 +98,21 @@ for i in range(last_idx + 1, len(pseudonym_data)):
         )
         all_dist.append(abs(dist - dist_formula))
         
+        
         # Check if the pseudonym has changed and the distance is reasonable
         if abs(dist - dist_formula) <= threshold:
             vehicle_idx.append(i)
             last_idx = i
+            check.append(abs(dist - dist_formula))
 
+# Compute the actual record indexes
 actual_idx = [starting_idx]
 for i in range(starting_idx + 1,len(data)):
     if data.ServiceID[i] == serviceID  :
         actual_idx.append(i)
 
+
+vehicle_record = pseudonym_data.loc[vehicle_idx]
 
 vehicle_pseudonym_changes_df = compile_pseudonym_changes(pseudonym_data,vehicle_idx)
 actual_pseudonym_changes_df= compile_pseudonym_changes(pseudonym_data,actual_idx)
@@ -98,37 +120,26 @@ actual_pseudonym_changes_df= compile_pseudonym_changes(pseudonym_data,actual_idx
 match_pseudonym_changes = pd.merge(vehicle_pseudonym_changes_df, actual_pseudonym_changes_df)
 count_match_pseudonym_changes = match_pseudonym_changes.shape[0]
 
-# pseudonym_change_check = 0
-# pseudonym_change_wrong  = 0
-# for i in vehicle_pseudonym_changes_df:
-#     if i in actual_pseudonym_changes_df:
-#         pseudonym_change_check += 1
-#     else:
-#         pseudonym_change_wrong += 1
-
-# pseudonym_change_check = sum(item in vehicle_pseudonym_changes_df for item in actual_pseudonym_changes_df)
-# pseudonym_change_wrong = sum(item not in actual_pseudonym_changes_df for item in vehicle_pseudonym_changes_df)
-
 count = sum(item in vehicle_idx for item in actual_idx)
 diff_count = sum(item not in actual_idx for item in vehicle_idx )
 
-# accuracy = (TP + TN) / (TP + TN + FP + FN)
-# accuracy = (count + diff_count) / len(vehicle_idx)
+accuracy = 100 * (count / (count+(len(vehicle_idx)-len(actual_idx))+(len(actual_idx)-count)))
+pseu_accuracy = 100 * (count_match_pseudonym_changes / (count_match_pseudonym_changes+(len(vehicle_pseudonym_changes_df)-len(actual_pseudonym_changes_df))+(len(actual_pseudonym_changes_df)-count_match_pseudonym_changes)))
 
 print(f'                    ServiceID = {serviceID}')
 print('-----------------------------------------------------------------')
 print(f'Total Vehicle record found is {len(vehicle_idx)}')
 print(f'Total Actual Record is {len(actual_idx)}')
 print(f'Matched Record: {count}/{len(actual_idx)}')
-print(f'There are {diff_count} records found that is wrong')
+print(f'There are {diff_count} predicted records found is wrong')
+print('The accuracy of the predicted result is %.2f %%' % accuracy)
 print()
 print(f'Total Pseudonym changes found is {len(vehicle_pseudonym_changes_df)}')
 print(f'Total Actual Pseudonym Cahnges is {len(actual_pseudonym_changes_df)}')
 print(f'Matched Pseudonym Changes: {count_match_pseudonym_changes}/{len(actual_pseudonym_changes_df)}')
-print(f'There are {len(vehicle_pseudonym_changes_df)-count_match_pseudonym_changes} peudonym changes found that is wrong')
-print()
-# print(f'The Accuracy of the result is {accuracy}')
-         
+print(f'There are {len(vehicle_pseudonym_changes_df)-count_match_pseudonym_changes} predicted peudonym changes found is wrong')
+print('The accuracy of the predicted result is %.2f %%' % pseu_accuracy)
+
         
         
         
