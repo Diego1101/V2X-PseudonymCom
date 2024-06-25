@@ -38,3 +38,5 @@ cmake --build build --target run_pseudonym-changep
 ```
 
 ## Execution of python attacker
+
+The code for the static attacker can be found under the directory "attacker", to run it its necessary to install the pandas library. It is recomended to run it using python3.

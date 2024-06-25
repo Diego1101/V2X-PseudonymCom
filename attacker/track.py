@@ -9,10 +9,10 @@ import math
 # evaluate how good the pseudonym change strategies are
 
 # Comment unwanted cam message file and uncomment wanted cam message file here
-# can_file = 'camRandTime.csv'
-can_file = 'camRandDistance.csv'
-# can_file = 'camDistance.csv'
-# can_file = 'camPeriodical.csv'
+# can_file = 'attacker/camRandTime.csv'
+can_file = 'attacker/camRandDistance.csv'
+# can_file = 'attacker/camDistance.csv'
+# can_file = 'attacker/camPeriodical.csv'
 
 data = pd.read_csv(can_file)
 # data = data.drop(data.index[724:])
