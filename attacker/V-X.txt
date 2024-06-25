@@ -1,0 +1,23 @@
+Präsentation:
+Index -> M
+Introduction to V-X
+	Explanation and messages -> Claudia
+	Security -> Francesc
+Show Case (chan) 
+	Pseudonym Change -> Angela
+	Attacker Strategies -> M
+	Comparison - Quality -> M
+	Protection -> Atharva
+	Our choosen strategy -> Atharva
+Configuration and tools
+	Sumo -> Ranuka
+	Omnet++ -> Ranuka
+	Artery -> Ranuka
+	Interaction between them -> Diego
+	1st Demo + Simulation explanation  -> Diego
+2nd Demo +Simulation  explanation -> Diego
+Results -> Diego
+Future Work -> Joey
+	Dynamic attacker -> Joey
+	More change strategies to be implemented -> Joey
+Q&A
