@@ -1,15 +1,40 @@
-![Artery V2X Simulation Framework](https://raw.githubusercontent.com/riebl/artery/master/logo.png)
+# V2X Project SS24
 
-Artery enables V2X simulations based on ETSI ITS-G5 protocols like GeoNetworking and BTP.
-Single vehicles can be equipped with multiple ITS-G5 services through Artery's middleware, which also provides common Facilities for these services.
+This project provide a base to run multiple psuedonym change strategies, using the [Artery framework](http://artery.v2x-research.eu/), this work is partially based in [MobCom_Project_22WS](https://gitlab.hs-esslingen.de/dschoop/mobcom_project_22ws) and provides a simpler way to get starter with the code.
 
-Artery started as an extension of the [Veins framework](http://veins.car2x.org) but can be used independently nowadays.
-Please refer to its [documentation](http://veins.car2x.org/documentation) for details about Veins.
 
-## Documentation
+## Project Structure
 
-We have started to extend the available documentation about Artery and created a website for this purpose.
-Please visit [artery.v2x-research.eu](http://artery.v2x-research.eu).
-The [install instructions](http://artery.v2x-research.eu/install/) previously found in this README have also been moved to this website.
-We welcome your contribution to this documentation effort just as to Artery itself.
-If you want to build the website yourself see also [our mkdocs guide](http://artery.v2x-research.eu/mkdocs).
+The main folder is a clone of [artery repository](https://github.com/riebl/artery), the scenario to use can be found under "scenarios/pseudonym-changep" wich contains all the services and sumo files required for the simulation.
+
+The attacker folder contains the python scrips used for the static attacker simulation and result analsys.
+
+The artery simulation output "cam.txt" file that then has to be provided to the python attacker attacker in order to work, this file can be found under "scenarios/pseudonym-changep/results"
+
+
+## Instalation 
+
+This repository is based in the main brank for the [artery framework](http://artery.v2x-research.eu/install/), refer to artery documentation for installation.
+
+## Execution of artery simulation
+
+To exute the simulation first build the project
+
+1. Create the folder "build" and navigate to it
+2. Run
+   ```
+   make ..
+   ```
+3. Run
+   ```
+   cmake --build .
+    ```
+NOTE: Dont forget the point at the end of this command. The first time this command is executed the process might take a while, please be patient.
+
+Once the project is build return to the main folder and run
+
+``` 
+cmake --build build --target run_pseudonym-changep
+```
+
+# Execution of python attacker
