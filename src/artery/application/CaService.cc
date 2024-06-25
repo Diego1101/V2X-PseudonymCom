@@ -31,7 +31,7 @@ public:
         std::cout << "Writing CAMs to: " << log_filename << std::endl;
 
         m_file.open(log_filename, std::ios::trunc);
-        m_file << "Timestamp,ServiceID,Pseudonym,Longitude,Latitude,Width,Length,Speed,Heading" << std::endl;
+        m_file << "Timestamp,ServiceID,Pseudonym,Longitude,Latitude,Speed,Heading" << std::endl;
     }
 
     void log(const vanetza::asn1::Cam& message, const omnetpp::SimTime& time, int serviceId) {
@@ -49,8 +49,8 @@ public:
         m_file << header.stationID << ",";
         m_file << basic.referencePosition.longitude << ",";
         m_file << basic.referencePosition.latitude << ",";
-        m_file << bvc.vehicleWidth << ",";
-        m_file << bvc.vehicleLength.vehicleLengthValue << ",";
+        // m_file << bvc.vehicleWidth << ",";
+        // m_file << bvc.vehicleLength.vehicleLengthValue << ",";
         m_file << bvc.speed.speedValue << ",";
         m_file << bvc.heading.headingValue << "\n";
     }

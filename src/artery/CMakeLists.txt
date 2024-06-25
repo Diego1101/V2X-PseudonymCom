@@ -74,6 +74,8 @@ add_library(core SHARED
     application/PeriodicalPCService.cc
     application/BasePCService.cc
     application/DistancePCService.cc
+    application/DistanceRandPCService.cc
+    application/PeriodicalRandPCService.cc
 )
 target_link_libraries(artery INTERFACE core)
 add_library(Artery::Core ALIAS core)

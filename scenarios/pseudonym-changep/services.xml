@@ -6,7 +6,13 @@
 	<!-- <service type="artery.application.PeriodicalPCService">
 		<listener port="2001" />
 	</service> -->
-	<service type="artery.application.DistancePCService">
+	<!-- <service type="artery.application.DistancePCService">
+		<listener port="2001" />
+	</service> -->
+	<!-- <service type="artery.application.PeriodicalRandPCService">
+		<listener port="2001" />
+	</service> -->
+	<service type="artery.application.DistanceRandPCService">
 		<listener port="2001" />
 	</service>
 </services>
